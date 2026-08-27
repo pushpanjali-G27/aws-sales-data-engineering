@@ -1,0 +1,233 @@
+-- ============================================================
+-- SALES DATA ENGINEERING PROJECT
+-- Amazon Athena SQL Analysis
+-- Database: sales_db
+-- Table: result_athena
+-- ============================================================
+
+
+-- ============================================================
+-- 01. Total Orders
+-- ============================================================
+
+SELECT
+    COUNT(*) AS total_orders
+FROM sales_db.result_athena;
+
+
+-- ============================================================
+-- 02. Total Sales
+-- ============================================================
+
+SELECT
+    SUM(sales_amount) AS total_sales
+FROM sales_db.result_athena;
+
+
+-- ============================================================
+-- 03. Average Order Value
+-- ============================================================
+
+SELECT
+    AVG(sales_amount) AS average_order_value
+FROM sales_db.result_athena;
+
+
+-- ============================================================
+-- 04. Sales by State
+-- ============================================================
+
+SELECT
+    state,
+    COUNT(*) AS total_orders,
+    SUM(sales_amount) AS total_sales
+FROM sales_db.result_athena
+GROUP BY state
+ORDER BY total_sales DESC;
+
+
+-- ============================================================
+-- 05. Sales by Category
+-- ============================================================
+
+SELECT
+    category,
+    COUNT(*) AS total_orders,
+    SUM(sales_amount) AS total_sales
+FROM sales_db.result_athena
+GROUP BY category
+ORDER BY total_sales DESC;
+
+
+-- ============================================================
+-- 06. Monthly Sales
+-- ============================================================
+
+SELECT
+    order_month,
+    order_month_name,
+    SUM(sales_amount) AS total_sales
+FROM sales_db.result_athena
+GROUP BY order_month, order_month_name
+ORDER BY order_month;
+
+
+-- ============================================================
+-- 07. Top 5 Products by Sales
+-- ============================================================
+
+SELECT
+    product_name,
+    SUM(sales_amount) AS total_sales
+FROM sales_db.result_athena
+GROUP BY product_name
+ORDER BY total_sales DESC
+LIMIT 5;
+
+
+-- ============================================================
+-- 08. Top 5 Customers by Sales
+-- ============================================================
+
+SELECT
+    customer_id,
+    customer_name,
+    SUM(sales_amount) AS total_sales
+FROM sales_db.result_athena
+GROUP BY customer_id, customer_name
+ORDER BY total_sales DESC
+LIMIT 5;
+
+
+-- ============================================================
+-- 09. Orders by Status
+-- ============================================================
+
+SELECT
+    order_status,
+    COUNT(*) AS total_orders
+FROM sales_db.result_athena
+GROUP BY order_status
+ORDER BY total_orders DESC;
+
+
+-- ============================================================
+-- 10. Sales by City
+-- ============================================================
+
+SELECT
+    city,
+    COUNT(*) AS total_orders,
+    SUM(sales_amount) AS total_sales
+FROM sales_db.result_athena
+GROUP BY city
+ORDER BY total_sales DESC;
+
+
+-- ============================================================
+-- 11. Sales by Subcategory
+-- ============================================================
+
+SELECT
+    subcategory,
+    COUNT(*) AS total_orders,
+    SUM(sales_amount) AS total_sales
+FROM sales_db.result_athena
+GROUP BY subcategory
+ORDER BY total_sales DESC;
+
+
+-- ============================================================
+-- 12. Repeat Customers
+-- Customers who placed more than one order
+-- ============================================================
+
+SELECT
+    customer_id,
+    customer_name,
+    COUNT(*) AS order_count
+FROM sales_db.result_athena
+GROUP BY customer_id, customer_name
+HAVING COUNT(*) > 1
+ORDER BY order_count DESC;
+
+
+-- ============================================================
+-- 13. Quantity Sold by Category
+-- ============================================================
+
+SELECT
+    category,
+    SUM(quantity) AS total_quantity
+FROM sales_db.result_athena
+GROUP BY category
+ORDER BY total_quantity DESC;
+
+
+-- ============================================================
+-- 14. Cancelled Orders and Sales
+-- ============================================================
+
+SELECT
+    COUNT(*) AS cancelled_orders,
+    SUM(sales_amount) AS cancelled_sales
+FROM sales_db.result_athena
+WHERE order_status = 'Cancelled';
+
+
+-- ============================================================
+-- 15. Completed Orders and Sales
+-- ============================================================
+
+SELECT
+    COUNT(*) AS completed_orders,
+    SUM(sales_amount) AS completed_sales
+FROM sales_db.result_athena
+WHERE order_status = 'Completed';
+
+
+-- ============================================================
+-- 16. Highest-Value Orders
+-- Top 10 individual transactions
+-- ============================================================
+
+SELECT
+    order_id,
+    order_date,
+    customer_name,
+    product_name,
+    quantity,
+    sales_amount,
+    order_status
+FROM sales_db.result_athena
+ORDER BY sales_amount DESC
+LIMIT 10;
+
+
+-- ============================================================
+-- 17. Category and Order Status Analysis
+-- ============================================================
+
+SELECT
+    category,
+    order_status,
+    COUNT(*) AS total_orders,
+    SUM(sales_amount) AS total_sales
+FROM sales_db.result_athena
+GROUP BY category, order_status
+ORDER BY category, total_sales DESC;
+
+
+-- ============================================================
+-- 18. Monthly Sales Summary
+-- Orders and sales by month
+-- ============================================================
+
+SELECT
+    order_month,
+    order_month_name,
+    COUNT(order_id) AS total_orders,
+    SUM(sales_amount) AS total_sales
+FROM sales_db.result_athena
+GROUP BY order_month, order_month_name
+ORDER BY order_month;
